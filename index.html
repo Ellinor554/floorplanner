@@ -1152,7 +1152,7 @@ cv.addEventListener('dblclick',()=>{
 cv.addEventListener('wheel',e=>{
   e.preventDefault();
   const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
-  const fac=e.deltaY<0?1.12:.88,nz=Math.max(.2,Math.min(4,S.zoom*fac));
+  const fac=e.deltaY<0?1.12:1/1.12,nz=Math.max(.2,Math.min(4,S.zoom*fac));
   S.px=mx-(mx-S.px)*nz/S.zoom;S.py=my-(my-S.py)*nz/S.zoom;S.zoom=nz;render();
 },{passive:false});
 
