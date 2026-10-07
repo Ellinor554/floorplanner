@@ -182,7 +182,7 @@ body{
             <b style="color:var(--tx1);font-weight:600">D</b> Dörr &nbsp;
             <b style="color:var(--tx1);font-weight:600">F</b> Fönster<br>
             Dubbelklick avslutar vägg · Shift låser vinkel<br>
-            Scroll zoomar · Alt+drag panorerar
+            Scroll zoomar · Mellanslag+drag panorerar · Dra på tom yta
           </div>
         </div>
       </div>
@@ -331,7 +331,7 @@ const S={
   resizing:false, resEl:null, resHandle:-1, resFixL:{x:0,y:0}, resInitC:{x:0,y:0},
   panelFurn:null, panelPos:null,
   px:80, py:60, zoom:1, panning:false, panStart:null,
-  shift:false, hover:null,
+  shift:false, spaceDown:false, hover:null,
   project:null, saveTimer:null,
 };
 let _id=1;
@@ -1046,7 +1046,14 @@ function selDown(p){
     if(el.type==='furniture') S.dragOff={x:p.x-el.x,y:p.y-el.y};
     else if(el.type==='wall') S.dragOff={x:p.x-el.x1,y:p.y-el.y1};
     else S.dragOff={x:p.x-el.x,y:p.y-el.y};
-  } else {S.sel=null;}
+  } else {
+    S.sel=null;
+    // Drag on empty canvas = pan
+    const r=cv.getBoundingClientRect();
+    const ce={clientX:p.x*S.zoom+S.px+r.left,clientY:p.y*S.zoom+S.py+r.top};
+    S.panning=true;S.panStart={x:ce.clientX-S.px,y:ce.clientY-S.py};
+    cv.style.cursor='grabbing';
+  }
   render();
 }
 
@@ -1095,7 +1102,7 @@ function selUp(){
 // CANVAS EVENTS
 // ═══════════════════════════════════════════════════════════════════════════════
 cv.addEventListener('mousedown',e=>{
-  if(e.button===1||(e.button===0&&e.altKey)){
+  if(e.button===1||(e.button===0&&e.altKey)||(e.button===0&&S.spaceDown)){
     S.panning=true;S.panStart={x:e.clientX-S.px,y:e.clientY-S.py};
     cv.style.cursor='grabbing';return;
   }
@@ -1168,6 +1175,9 @@ cv.addEventListener('mouseleave',()=>{document.getElementById('tt').style.displa
 // ═══════════════════════════════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
   S.shift=e.shiftKey;
+  if(e.key===' '&&!S.spaceDown&&document.activeElement.tagName!=='INPUT'){
+    e.preventDefault();S.spaceDown=true;cv.style.cursor='grab';return;
+  }
   if(document.activeElement.tagName==='INPUT')return;
   if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
   if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='Z'))){e.preventDefault();redo();}
@@ -1179,7 +1189,10 @@ document.addEventListener('keydown',e=>{
     if(e.key==='f')setTool('window');if(e.key==='x')setTool('delete');
   }
 });
-document.addEventListener('keyup',e=>{S.shift=e.shiftKey;});
+document.addEventListener('keyup',e=>{
+  S.shift=e.shiftKey;
+  if(e.key===' '){S.spaceDown=false;if(!S.panning)cv.style.cursor=getCur();}
+});
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TOOL SWITCH
