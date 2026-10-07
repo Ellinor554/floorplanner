@@ -1171,6 +1171,15 @@ cv.addEventListener('wheel',e=>{
 cv.addEventListener('mouseleave',()=>{document.getElementById('tt').style.display='none';});
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// ZOOM HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+function zoomStep(fac){
+  const mx=cv.width/2,my=cv.height/2;
+  const nz=Math.max(.08,Math.min(12,S.zoom*fac));
+  S.px=mx-(mx-S.px)*nz/S.zoom;S.py=my-(my-S.py)*nz/S.zoom;S.zoom=nz;render();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // KEYBOARD
 // ═══════════════════════════════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
@@ -1187,6 +1196,9 @@ document.addEventListener('keydown',e=>{
     if(e.key==='v'||e.key==='Escape')setTool('select');
     if(e.key==='w')setTool('wall');if(e.key==='d')setTool('door');
     if(e.key==='f')setTool('window');if(e.key==='x')setTool('delete');
+    if(e.key==='+'||e.key==='='){e.preventDefault();zoomStep(1.25);}
+    if(e.key==='-'){e.preventDefault();zoomStep(1/1.25);}
+    if(e.key==='0'){e.preventDefault();S.zoom=1;S.px=80;S.py=60;render();}
   }
 });
 document.addEventListener('keyup',e=>{
