@@ -279,6 +279,12 @@ body{
   <div id="cvw" style="flex:1;overflow:hidden;position:relative">
     <canvas id="cv"></canvas>
     <div id="tt"></div>
+    <!-- Zoom controls -->
+    <div style="position:absolute;bottom:14px;right:14px;display:flex;align-items:center;gap:1px;background:var(--bg0);border:1px solid var(--bd1);border-radius:5px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.5)">
+      <button onclick="zoomStep(1/1.25)" title="Zooma ut (-)" style="width:28px;height:28px;background:transparent;border:none;cursor:pointer;color:var(--tx1);font-size:16px;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:background .12s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">−</button>
+      <button id="zoom-label" onclick="S.zoom=1;S.px=80;S.py=60;render()" title="Återställ zoom (0)" style="min-width:46px;height:28px;background:transparent;border:none;cursor:pointer;color:var(--tx2);font-size:9px;font-weight:600;font-family:inherit;letter-spacing:.04em;transition:background .12s;padding:0 2px" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">100%</button>
+      <button onclick="zoomStep(1.25)" title="Zooma in (+)" style="width:28px;height:28px;background:transparent;border:none;cursor:pointer;color:var(--tx1);font-size:16px;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:background .12s" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='transparent'">+</button>
+    </div>
   </div>
 
   <!-- Right panel (furniture) -->
@@ -660,6 +666,8 @@ function render(){
   drawScaleBar(W,H);
   updateArea();
   updateInspector();
+  const zl=document.getElementById('zoom-label');
+  if(zl)zl.textContent=Math.round(S.zoom*100)+'%';
 }
 
 function drawGrid(W,H,ox,oy){
