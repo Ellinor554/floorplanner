@@ -697,7 +697,7 @@ function render(){
 
   // Render order: walls → openings → furniture
   S.els.filter(e=>e.type==='wall').forEach(e=>drawWall(e,e.id===S.sel,e.id===S.hover));
-  S.els.filter(e=>e.type==='door'||e.type==='window').forEach(e=>drawOpening(e,e.id===S.sel,e.id===S.hover));
+  S.els.filter(e=>e.type==='door'||e.type==='window'||e.type==='garage'||e.type==='opening').forEach(e=>drawOpening(e,e.id===S.sel,e.id===S.hover));
   S.els.filter(e=>e.type==='furniture').forEach(e=>drawFurn(e,e.id===S.sel,e.id===S.hover));
 
   if(S.drawing&&S.dStart&&S.dCur)drawWallPrev(S.dStart,S.dCur);
@@ -921,7 +921,7 @@ function convexHull(pts){
 function hitAll(x,y){
   // Check furniture first (on top), then openings, then walls
   const furn=S.els.filter(e=>e.type==='furniture').reverse();
-  const open=S.els.filter(e=>e.type==='door'||e.type==='window').reverse();
+  const open=S.els.filter(e=>e.type==='door'||e.type==='window'||e.type==='garage'||e.type==='opening').reverse();
   const walls=S.els.filter(e=>e.type==='wall').reverse();
   for(const e of [...furn,...open,...walls]) if(hitEl(e,x,y)) return e;
   return null;
